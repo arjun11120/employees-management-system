@@ -14,6 +14,7 @@ const NewEmployee = () => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm();
   const dispatch = useDispatch();
@@ -33,10 +34,17 @@ const NewEmployee = () => {
 
   const handleSaveChanges = () => {
     if (formData) {
-      dispatch(addEmployee(formData));
+      const existingEmployee = employees.find(emp => emp.EmployeeId === formData.EmployeeId);
+      if (existingEmployee) {
+        alert("An employee with this ID already exists.")
+      } else {
+        console.log(formData);
+        dispatch(addEmployee(formData));
+        reset();
     }
     handleClose();
   };
+}
 
   return (
     <>
@@ -55,7 +63,7 @@ const NewEmployee = () => {
         </Modal.Footer>
       </Modal>
       <Row className="d-flex justify-content-center">
-        <Col xs={4}>
+        <Col xs={12} sm={4}>
           <Card>
             <Card.Header>Add Employee</Card.Header>
             <Card.Body>
@@ -98,6 +106,19 @@ const NewEmployee = () => {
                     />
                     {errors.Department && (
                       <span className="text-danger">Department is required</span>
+                    )}
+                  </Form.Group>
+                  <Form.Group className="mb-3">
+                    <Form.Label>
+                    Salary <span className="text-danger">*</span>
+                    </Form.Label>
+                    <Form.Control
+                      type="number"
+                      placeholder="Enter the Phone Number"
+                      {...register("Salary", { required: true })}
+                    />
+                    {errors.Salary && (
+                      <span className="text-danger">Salary is required</span>
                     )}
                   </Form.Group>
                   <Form.Group className="mb-3">

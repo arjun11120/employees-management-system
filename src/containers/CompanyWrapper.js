@@ -185,7 +185,7 @@ const CompanyWrapper = () => {
               <Input
                 onChange={handleSearch}
                 placeholder="Search here..."
-                style={{ width: "50%", marginLeft: "20px"}}
+                style={{ width: "50%", marginLeft: "20px" }}
               />
             </Breadcrumb>
             <div
