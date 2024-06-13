@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { UserAddOutlined, UnorderedListOutlined } from "@ant-design/icons";
+import { UserAddOutlined, UnorderedListOutlined, BuildOutlined } from "@ant-design/icons";
 import { useMediaQuery } from 'react-responsive';
 import {
   Breadcrumb,
@@ -13,6 +13,8 @@ import {
   Button,
   Popconfirm,
 } from "antd";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 import NewEmployee from "../components/CompanyWrapper/NewEmployee";
 import { removeEmployee } from "../slices/employeeSlice";
@@ -99,7 +101,7 @@ const CompanyWrapper = () => {
   const endIndex = startIndex + pageSize;
   const paginatedData = sortedData.slice(startIndex, endIndex);
 
-  const serachedEmployees = employees.filter((employee) =>
+  const searchedEmployees = employees.filter((employee) =>
     employee.EmpName.toLowerCase().includes(searchEmp.toLowerCase())
   );
 
@@ -170,7 +172,40 @@ const CompanyWrapper = () => {
         </Popconfirm>
       ),
     },
+    {
+      title: "Download",
+      dataIndex: "EmployeeId",
+      key: "EmployeeId",
+      render: (id) => (
+        <Button type="primary" onClick={() => handleDownload(id)}>
+          Download
+        </Button>
+      ),
+    },
   ];
+
+  const handleDownload = (id) => {
+    const employee = employees.find((emp) => emp.EmployeeId === id);
+    if (employee) {
+      const doc = new jsPDF();
+      doc.text("Employee Details", 20, 10);
+      doc.autoTable({
+        startY: 20,
+        head: [["Field", "Value"]],
+        body: [
+          ["EmployeeId", employee.EmployeeId],
+          ["EmpName", employee.EmpName],
+          ["Department", employee.Department],
+          ["Salary", employee.Salary],
+          ["Phone Number", employee.PhNumber],
+          ["EmailId", employee.EmailId],
+          ["Address", employee.Address],
+          ["State", employee.State],
+        ],
+      });
+      doc.save(`${employee.EmpName}_Details.pdf`);
+    }
+  };
 
   const getContent = () => {
     switch (selectedOption) {
@@ -181,11 +216,12 @@ const CompanyWrapper = () => {
               style={{
                 margin: "16px 0",
               }}
-            > <h3>Dashboard</h3>
+            >
+              <h3>Dashboard</h3>
               <Input
                 onChange={handleSearch}
                 placeholder="Search here..."
-                style={{ width: "50%", marginLeft: "20px" }}
+                style={{ width: "50%", margin: "0px 20px" }}
               />
             </Breadcrumb>
             <div
@@ -198,7 +234,7 @@ const CompanyWrapper = () => {
             >
               <Table
                 columns={columns}
-                dataSource={searchEmp.length > 0 ? serachedEmployees : paginatedData}
+                dataSource={searchEmp.length > 0 ? searchedEmployees : paginatedData}
                 pagination={false}
                 onChange={handleTableChange}
               />
@@ -243,8 +279,11 @@ const CompanyWrapper = () => {
           }}
         >
           <Title level={3} style={{ margin: 0 }}>
+            <BuildOutlined className="mr-2" />
             My Company
           </Title>
+
+          <Button>Log out</Button>
         </Header>
         <Content
           style={{
@@ -255,7 +294,7 @@ const CompanyWrapper = () => {
         </Content>
         <Footer
           style={{
-            textAlign: "right"
+            textAlign: "right",
           }}
         >
           {selectedOption === "1" && (
