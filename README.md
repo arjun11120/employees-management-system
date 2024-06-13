@@ -20,6 +20,7 @@ Employee List:
 -- Sort by table values
 -- Delete after popup (data delete from the redux)
 -- Pagination
+-- Using the jsPDF library along with jspdf-autotable to generate and download a PDF file containing employee details
 
 Add Employee:
 -- Submit validation
